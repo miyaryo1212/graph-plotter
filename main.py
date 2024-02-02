@@ -7,7 +7,8 @@ from PIL import Image, ImageDraw
 
 BLUE = (68, 114, 196)
 GRAY = (128, 128, 128)
-MARGIN = 0
+BACKGROUND = (255, 255, 255)
+MARGIN = 10
 
 
 def scatter_plot_int(input, scale=1):
@@ -30,7 +31,7 @@ def scatter_plot_int(input, scale=1):
     # print(x_min, x_max, y_min, y_max)
 
     width, height = (x_max - x_min + 1), (y_max - y_min + 1)
-    image = Image.new("RGB", (width, height), (255, 255, 255))
+    image = Image.new("RGB", (width, height), BACKGROUND)
     draw = ImageDraw.Draw(image)
 
     adjusted_input = []
@@ -43,9 +44,16 @@ def scatter_plot_int(input, scale=1):
     draw.line(((abs(x_min), 0), ((abs(x_min), height))), GRAY)
     draw.point(adjusted_input, fill=BLUE)
 
-    image = image.resize((width * scale, height * scale), Image.NEAREST)
-    image.save(f"./outputs/result_{timestamp}.png")
-    # image.show()
+    width = width + MARGIN * 2
+    height = height + MARGIN * 2
+    margined_image = Image.new(image.mode, (width, height), BACKGROUND)
+    margined_image.paste(image, (MARGIN, MARGIN))
+
+    margined_image = margined_image.resize(
+        (width * scale, height * scale), Image.NEAREST
+    )
+    margined_image.save(f"./outputs/result_{timestamp}.png")
+    # margined_image.show()
 
 
 def convert_float_to_int(input, digit):
